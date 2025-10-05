@@ -7,9 +7,13 @@ import app.springboot.JournalApp.repository.UserRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -21,13 +25,12 @@ public class UserService {
     @Autowired
     private UserRepository userRepository ;
 
+    private static final PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+
     public void saveEntry(Users users){
-        try {
-//            users.setDate(LocalDateTime.now());
-            userRepository.save(users);
-        } catch (Exception e) {
-            log.error("Exception ", e);
-        }
+        users.setPassword(passwordEncoder.encode(users.getPassword()));
+        users.setRoles(Arrays.asList("USER"));
+        userRepository.save(users);
     }
 
     public List<Users> getAll(){
